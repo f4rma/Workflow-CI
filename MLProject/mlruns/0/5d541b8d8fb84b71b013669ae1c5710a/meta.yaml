@@ -1,0 +1,15 @@
+artifact_uri: file:///home/runner/work/Workflow-CI/Workflow-CI/MLProject/mlruns/0/5d541b8d8fb84b71b013669ae1c5710a/artifacts
+end_time: 1780430854510
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 5d541b8d8fb84b71b013669ae1c5710a
+run_name: rare-kit-404
+run_uuid: 5d541b8d8fb84b71b013669ae1c5710a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1780430850829
+status: 3
+tags: []
+user_id: runner
