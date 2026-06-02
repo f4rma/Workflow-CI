@@ -69,4 +69,3 @@ with mlflow.start_run(run_name=f"RandomForest_n{n_estimators}"):
     run_id = mlflow.active_run().info.run_id
     print(f"\nRun ID: {run_id}")
     print(f"Model artifact saved at: runs:/{run_id}/model")
-    print(f"Model artifact saved at: runs:/{run.info.run_id}/model")
