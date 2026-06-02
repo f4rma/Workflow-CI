@@ -1,0 +1,15 @@
+artifact_uri: file:///home/runner/work/Workflow-CI/Workflow-CI/MLProject/mlruns/0/da542a2eb6b740149b678e40ac974899/artifacts
+end_time: 1780431089805
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: da542a2eb6b740149b678e40ac974899
+run_name: mysterious-steed-590
+run_uuid: da542a2eb6b740149b678e40ac974899
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1780431085865
+status: 3
+tags: []
+user_id: runner
