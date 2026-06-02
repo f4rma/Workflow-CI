@@ -26,6 +26,7 @@ jobs:
         run: |
           pip install mlflow==2.9.2
           pip install scikit-learn pandas numpy
+          pip install docker
       
       - name: Run MLflow Training
         run: |
@@ -63,6 +64,13 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: Setup Docker for MLflow
+        run: |
+          # Ensure Docker daemon is accessible
+          docker info
+          # Install docker Python package
+          pip install docker
       
       - name: Build Docker Image with MLflow
         run: |
