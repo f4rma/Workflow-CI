@@ -1,0 +1,12 @@
+name: heart-disease-training
+
+conda_env: conda.yaml
+
+entry_points:
+  main:
+    parameters:
+      data_path: {type: string, default: "heart-disease_preprocessing.csv"}
+      n_estimators: {type: int, default: 100}
+      random_state: {type: int, default: 42}
+      test_size: {type: float, default: 0.2}
+    command: "python modelling.py {data_path} {n_estimators} {random_state} {test_size}"

@@ -1,0 +1,4 @@
+# Criterion 3 deliverable folder (CI Repository / MLflow Project).
+# Populated by later tasks: MLProject, conda.yaml, modelling.py,
+# namadataset_preprocessing, plus the .github/workflows/ci.yml and DockerHub.txt
+# at the Workflow-CI root.

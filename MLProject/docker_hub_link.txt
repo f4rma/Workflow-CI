@@ -1,0 +1,13 @@
+Docker Hub Image: [Will be updated after CI/CD run]
+Image Tag: [Will be updated after CI/CD run]
+Build Date: [Will be updated after CI/CD run]
+
+## Cara jalannya
+Setelah CI/CD berjalan, file ini akan berisi link ke Docker Hub image.
+
+Untuk menggunakan image:
+1. Pull image: docker pull <username>/heart-disease-model:latest
+2. Run container: docker run -p 5000:8080 <username>/heart-disease-model:latest
+3. Test prediction via API endpoint
+
+Note: Image akan otomatis ter-update setiap kali workflow CI/CD berjalan.

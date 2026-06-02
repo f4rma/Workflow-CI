@@ -1,0 +1,8 @@
+# Requirements untuk local testing
+# Install: pip install -r requirements.txt
+
+mlflow==2.9.2
+scikit-learn==1.3.2
+pandas==2.1.4
+numpy==1.26.2
+cloudpickle==3.0.0
