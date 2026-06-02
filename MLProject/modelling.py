@@ -41,32 +41,32 @@ mlflow.set_experiment("heart-disease-basic")
 # Autolog 
 mlflow.sklearn.autolog()
 
-# Training (MLflow Project already creates a run, no need for start_run context)
-model = RandomForestClassifier(n_estimators=n_estimators, random_state=random_state)
-model.fit(X_train, y_train)
+# Training with explicit run context
+with mlflow.start_run(run_name=f"RandomForest_n{n_estimators}"):
+    model = RandomForestClassifier(n_estimators=n_estimators, random_state=random_state)
+    model.fit(X_train, y_train)
 
-y_pred = model.predict(X_test)
-acc = accuracy_score(y_test, y_pred)
+    y_pred = model.predict(X_test)
+    acc = accuracy_score(y_test, y_pred)
 
-# Log additional parameters
-mlflow.log_param("data_path", data_path)
-mlflow.log_param("test_size", test_size)
+    # Log additional parameters
+    mlflow.log_param("data_path", data_path)
+    mlflow.log_param("test_size", test_size)
 
-# Log model explicitly (required for Docker build)
-mlflow.sklearn.log_model(
-    sk_model=model,
-    artifact_path="model",
-    registered_model_name="heart-disease-classifier"
-)
+    # Log model explicitly (required for Docker build)
+    mlflow.sklearn.log_model(
+        sk_model=model,
+        artifact_path="model",
+        registered_model_name="heart-disease-classifier"
+    )
 
-print(f"\nAccuracy : {acc:.4f}")
-print("\nClassification Report:")
-print(classification_report(y_test, y_pred))
-print("\nMLflow run selesai. Jalankan 'mlflow ui' untuk melihat dashboard.")
+    print(f"\nAccuracy : {acc:.4f}")
+    print("\nClassification Report:")
+    print(classification_report(y_test, y_pred))
+    print("\nMLflow run selesai. Jalankan 'mlflow ui' untuk melihat dashboard.")
 
-# Get run info untuk Docker build
-run = mlflow.active_run()
-if run:
-    print(f"\nRun ID: {run.info.run_id}")
-    print(f"Model artifact saved at: runs:/{run.info.run_id}/model")
+    # Get run info untuk Docker build
+    run_id = mlflow.active_run().info.run_id
+    print(f"\nRun ID: {run_id}")
+    print(f"Model artifact saved at: runs:/{run_id}/model")
     print(f"Model artifact saved at: runs:/{run.info.run_id}/model")
