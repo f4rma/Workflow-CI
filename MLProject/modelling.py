@@ -52,6 +52,13 @@ acc = accuracy_score(y_test, y_pred)
 mlflow.log_param("data_path", data_path)
 mlflow.log_param("test_size", test_size)
 
+# Log model explicitly (required for Docker build)
+mlflow.sklearn.log_model(
+    sk_model=model,
+    artifact_path="model",
+    registered_model_name="heart-disease-classifier"
+)
+
 print(f"\nAccuracy : {acc:.4f}")
 print("\nClassification Report:")
 print(classification_report(y_test, y_pred))
@@ -61,3 +68,5 @@ print("\nMLflow run selesai. Jalankan 'mlflow ui' untuk melihat dashboard.")
 run = mlflow.active_run()
 if run:
     print(f"\nRun ID: {run.info.run_id}")
+    print(f"Model artifact saved at: runs:/{run.info.run_id}/model")
+    print(f"Model artifact saved at: runs:/{run.info.run_id}/model")
