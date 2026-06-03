@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1780462733194
+current_stage: None
+description: null
+last_updated_timestamp: 1780462733194
+name: heart-disease-classifier
+run_id: d4a58fbb3645425ba7ad8fb5405e04fa
+run_link: null
+source: file:///home/runner/work/Workflow-CI/Workflow-CI/MLProject/mlruns/740110415802254864/d4a58fbb3645425ba7ad8fb5405e04fa/artifacts/model
+status: READY
+status_message: null
+storage_location: file:///home/runner/work/Workflow-CI/Workflow-CI/MLProject/mlruns/740110415802254864/d4a58fbb3645425ba7ad8fb5405e04fa/artifacts/model
+user_id: null
+version: 6
