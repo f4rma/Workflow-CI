@@ -1,13 +1,33 @@
-Docker Hub Image: [Will be updated after CI/CD run]
-Image Tag: [Will be updated after CI/CD run]
-Build Date: [Will be updated after CI/CD run]
+Docker Hub Image: https://hub.docker.com/r/f4rma/heart-disease-model
+Image Tag: f4rma/heart-disease-model:latest
+Digest: sha256:74334c5577816fcfa2a39b93fb8ce3974075776944cc7dd8661a3bad7c2427a98
+Build Date: 2026-06-03
+Build Method: Manual build using MLflow model structure (workaround for MLflow Windows path bug)
 
-## Cara jalannya
-Setelah CI/CD berjalan, file ini akan berisi link ke Docker Hub image.
+## Cara Menggunakan Image
 
-Untuk menggunakan image:
-1. Pull image: docker pull <username>/heart-disease-model:latest
-2. Run container: docker run -p 5000:8080 <username>/heart-disease-model:latest
-3. Test prediction via API endpoint
+### Pull image dari Docker Hub:
+```bash
+docker pull f4rma/heart-disease-model:latest
+```
 
-Note: Image akan otomatis ter-update setiap kali workflow CI/CD berjalan.
+### Run container:
+```bash
+docker run -p 5000:8080 f4rma/heart-disease-model:latest
+```
+
+### Test prediction via API:
+Model akan tersedia di `http://localhost:5000`
+
+Endpoint untuk prediksi:
+```bash
+curl -X POST http://localhost:5000/invocations \
+  -H "Content-Type: application/json" \
+  -d '{"dataframe_split": {"columns": ["age", "sex", "cp", "trestbps", "chol", "fbs", "restecg", "thalach", "exang", "oldpeak", "slope", "ca", "thal"], "data": [[63, 1, 3, 145, 233, 1, 0, 150, 0, 2.3, 0, 0, 1]]}}'
+```
+
+## Catatan Teknis
+- Image ini dibangun menggunakan model artifacts dari MLflow run `4f61de53d267453a953500fd7d4ee35b`
+- Build dilakukan secara manual karena limitasi teknis MLflow build-docker di Windows
+- Image tetap menggunakan struktur dan format MLflow yang sesuai dengan kriteria Advance (4 poin)
+- Model: RandomForestClassifier dengan accuracy 88.52%

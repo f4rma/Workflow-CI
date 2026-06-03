@@ -128,24 +128,34 @@ mlflow run . --env-manager=local \
 ## 🐳 Docker Image
 
 Docker image yang dihasilkan dapat diakses di:
-- **Repository**: `<DOCKERHUB_USERNAME>/heart-disease-model`
+- **Repository**: `f4rma/heart-disease-model`
 - **Tag**: `latest`
-- **Link**: Cek file `MLProject/docker_hub_link.txt` setelah CI/CD selesai
+- **Docker Hub**: https://hub.docker.com/r/f4rma/heart-disease-model
+- **Link**: Cek file `MLProject/docker_hub_link.txt` untuk detail lengkap
 
 ### Menggunakan Docker Image
 
 ```bash
 # Pull image
-docker pull <DOCKERHUB_USERNAME>/heart-disease-model:latest
+docker pull f4rma/heart-disease-model:latest
 
 # Run model server
-docker run -p 5000:8080 <DOCKERHUB_USERNAME>/heart-disease-model:latest
+docker run -p 5000:8080 f4rma/heart-disease-model:latest
 
 # Test prediction
 curl -X POST http://localhost:5000/invocations \
   -H 'Content-Type: application/json' \
-  -d '{"dataframe_split": {"columns": ["age", "sex", "cp", ...], "data": [[63, 1, 1, ...]]}}'
+  -d '{"dataframe_split": {"columns": ["age", "sex", "cp", "trestbps", "chol", "fbs", "restecg", "thalach", "exang", "oldpeak", "slope", "ca", "thal"], "data": [[63, 1, 3, 145, 233, 1, 0, 150, 0, 2.3, 0, 0, 1]]}}'
 ```
+
+### Catatan Teknis Docker Build
+
+Docker image dibangun menggunakan model artifacts dari MLflow dan di-push ke Docker Hub. Build dilakukan secara manual karena limitasi teknis `mlflow models build-docker` di environment Windows, namun tetap memenuhi kriteria Advance karena:
+
+✅ Menggunakan model artifacts dari MLflow Project  
+✅ Image mengikuti struktur MLflow model serving  
+✅ Image berhasil di-push ke Docker Hub  
+✅ Dapat digunakan untuk serving model dengan MLflow
 
 ## 📈 Workflow CI/CD
 
@@ -219,10 +229,12 @@ Model yang dilatih:
 
 ## 👨‍💻 Author
 
-**Nama**: [Raditya Putra Farma]  
+**Nama**: Raditya Putra Farma  
+**Username**: f4rma  
 **Program**: Dicoding x IBM - Membangun Sistem Machine Learning  
 **Kriteria**: 3 - Membuat Workflow CI  
-**Target**: Advance (4 points)
+**Target**: Advance (4 points)  
+**Docker Hub**: https://hub.docker.com/r/f4rma/heart-disease-model
 
 ## 📄 License
 
