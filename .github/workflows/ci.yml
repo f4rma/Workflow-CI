@@ -62,14 +62,26 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       
-      - name: Setup Docker for MLflow
+      - name: Setup Docker Environment for MLflow
         run: |
-          # Switch to default docker builder (not buildx)
-          docker buildx use default || true
-          docker context use default
+          # Set DOCKER_HOST to use unix socket directly
+          echo "DOCKER_HOST=unix:///var/run/docker.sock" >> $GITHUB_ENV
+          
+          # Verify Docker is accessible
           docker info
+          docker version
+          
+          # Test Docker build capability
+          echo "FROM python:3.9-slim" > Dockerfile.test
+          docker build -f Dockerfile.test -t test-image .
+          docker rmi test-image
+          rm Dockerfile.test
+          
+          echo "Docker setup complete"
       
       - name: Build Docker Image with MLflow
+        env:
+          DOCKER_HOST: unix:///var/run/docker.sock
         run: |
           cd MLProject
           RUN_ID="${{ steps.get_run_id.outputs.run_id }}"
@@ -77,8 +89,9 @@ jobs:
           IMAGE_NAME="${{ secrets.DOCKERHUB_USERNAME }}/heart-disease-model:latest"
           
           echo "Building Docker image for model: $MODEL_URI"
+          echo "Using DOCKER_HOST: $DOCKER_HOST"
           
-          # Use mlflow build-docker without --enable-mlserver (simpler, more compatible)
+          # Use mlflow build-docker with explicit DOCKER_HOST
           mlflow models build-docker -m "$MODEL_URI" -n "$IMAGE_NAME"
           
           echo "Pushing image to Docker Hub..."
