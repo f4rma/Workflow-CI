@@ -1,11 +1,22 @@
-Docker Hub Image: https://hub.docker.com/r/f4rma/heart-disease-model
-Image Tag: f4rma/heart-disease-model:latest
-Digest: sha256:74334c5577816fcfa2a39b93fb8ce397407577694cc7dd8661a3bad7c2427a98
-Build Date: 2026-06-03
-Image Size: 234.44 MB (compressed) / 1.08 GB (uncompressed)
-OS/Architecture: linux/amd64
-Status: Public
-Build Method: Manual build using MLflow model structure (workaround for MLflow Windows path bug)
+## Docker Hub Repository
+**Repository URL**: https://hub.docker.com/r/f4rma/heart-disease-model
+**Tags URL**: https://hub.docker.com/r/f4rma/heart-disease-model/tags
+
+## Image Information
+**Repository Name**: f4rma/heart-disease-model
+**Tag**: latest
+**Full Image Name** (for docker commands): `f4rma/heart-disease-model:latest`
+**Digest**: sha256:74334c5577816fcfa2a39b93fb8ce397407577694cc7dd8661a3bad7c2427a98
+**Build Date**: June 3, 2026
+**Image Size**: 234.44 MB (compressed) / 1.08 GB (uncompressed)
+**OS/Architecture**: linux/amd64
+**Status**: Public
+
+## Build Information
+**Build Method**: Manual build using MLflow model structure
+**Base Image**: python:3.9-slim
+**Model Run ID**: 4f61de53d267453a953500fd7d4ee35b
+**Model Accuracy**: 88.52%
 
 ## Cara Menggunakan Image
 
