@@ -44,3 +44,22 @@ mlflow_output/
 # OS
 .DS_Store
 Thumbs.db
+
+# Documentation files (local reference only)
+*PANDUAN*.md
+*QUICK_START*.md
+*COMPLETION*.md
+*ENVIRONMENT*.md
+*CHANGELOG*.md
+*PERBEDAAN*.md
+*INDEX*.md
+*UPDATE*.md
+*FIX*.md
+*CHECKLIST*.md
+START_HERE.md
+*.bat
+test_environment.py
+test_mlflow_run.bat
+
+# Kriteria 4 files (separate repo)
+Monitoring dan Logging/

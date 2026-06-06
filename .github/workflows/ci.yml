@@ -24,66 +24,57 @@ jobs:
       
       - name: Install dependencies
         run: |
-          pip install mlflow==2.19.0
-          pip install scikit-learn pandas numpy
-          pip install 'docker<7.0.0'
+          python -m pip install --upgrade pip
+          pip install mlflow==2.19.0 pandas scikit-learn docker joblib
       
       - name: Run MLflow Project
+        working-directory: MLProject
+        env:
+          MLFLOW_TRACKING_URI: "file://${{ github.workspace }}/MLProject/mlruns"
         run: |
-          mlflow run MLProject \
+          echo "Starting MLflow Project run..."
+          echo "Working directory: $(pwd)"
+          
+          mlflow run . --env-manager=local \
+            --experiment-name "heart-disease-basic" \
             -P data_path=heart-disease_preprocessing.csv \
             -P n_estimators=100 \
             -P random_state=42 \
             -P test_size=0.2
+          
+          echo "MLflow Project run completed successfully"
       
       - name: Get latest run ID
         id: get_run_id
         run: |
-          cd MLProject
-          # Wait a bit for mlflow to finalize
-          sleep 5
+          set -euo pipefail
+          MLROOT="${GITHUB_WORKSPACE}/MLProject/mlruns"
+          echo "Looking for mlruns in: $MLROOT"
           
-          # Get the latest run ID with better error handling
-          RUN_ID=$(python -c "
-          import mlflow
-          import os
-          
-          mlruns_path = './mlruns'
-          if not os.path.exists(mlruns_path):
-              print('ERROR: mlruns folder not found')
-              exit(1)
-          
-          try:
-              client = mlflow.tracking.MlflowClient(mlruns_path)
-              experiment = client.get_experiment_by_name('heart-disease-basic')
-              
-              if experiment is None:
-                  print('ERROR: Experiment not found')
-                  exit(1)
-              
-              runs = client.search_runs(
-                  experiment.experiment_id,
-                  order_by=['start_time DESC'],
-                  max_results=1
-              )
-              
-              if len(runs) == 0:
-                  print('ERROR: No runs found')
-                  exit(1)
-              
-              print(runs[0].info.run_id)
-          except Exception as e:
-              print(f'ERROR: {str(e)}')
-              exit(1)
-          " 2>&1)
-          
-          if [[ $RUN_ID == ERROR* ]]; then
-            echo "Failed to get run ID: $RUN_ID"
+          if [ ! -d "$MLROOT" ]; then
+            echo "ERROR: mlruns directory not found"
             exit 1
           fi
           
+          # Find latest meta.yaml by modification time
+          LATEST_META=$(find "$MLROOT" -type f -name "meta.yaml" -printf '%T@ %p\n' | sort -k1,1nr | head -n1 | awk '{print $2}')
+          
+          if [ -z "$LATEST_META" ]; then
+            echo "ERROR: No MLflow meta.yaml found"
+            exit 1
+          fi
+          
+          RUN_DIR=$(dirname "$LATEST_META")
+          RUN_ID=$(basename "$RUN_DIR")
+          EXP_DIR=$(dirname "$RUN_DIR")
+          EXP_ID=$(basename "$EXP_DIR")
+          
+          echo "RUN_DIR=$RUN_DIR" >> $GITHUB_ENV
+          echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
+          echo "EXP_ID=$EXP_ID" >> $GITHUB_ENV
+          
           echo "run_id=$RUN_ID" >> "$GITHUB_OUTPUT"
-          echo "Latest Run ID: $RUN_ID"
+          echo "Latest MLflow run: experiment=$EXP_ID, run=$RUN_ID"
       
       - name: Archive MLflow artifacts
         uses: actions/upload-artifact@v4
@@ -97,15 +88,7 @@ jobs:
           cd MLProject
           if [ -d "mlruns" ]; then
             echo "✅ mlruns folder exists"
-            echo "Contents:"
             ls -la mlruns/
-            
-            # Check if there are any experiment folders
-            if [ "$(ls -A mlruns/)" ]; then
-              echo "✅ mlruns folder is not empty"
-            else
-              echo "⚠️ WARNING: mlruns folder is empty"
-            fi
           else
             echo "❌ ERROR: mlruns folder not found"
             exit 1
@@ -146,21 +129,23 @@ jobs:
         env:
           DOCKER_HOST: unix:///var/run/docker.sock
         run: |
-          cd MLProject
-          RUN_ID="${{ steps.get_run_id.outputs.run_id }}"
-          MODEL_URI="runs:/$RUN_ID/model"
-          IMAGE_NAME="${{ secrets.DOCKERHUB_USERNAME }}/heart-disease-model:latest"
+          echo "Building Docker image from artifact path..."
+          ART="${{ env.RUN_DIR }}/artifacts/model"
+          IMAGE_NAME="${{ secrets.DOCKERHUB_USERNAME }}/heart-disease-model"
           
-          echo "Building Docker image for model: $MODEL_URI"
-          echo "Using DOCKER_HOST: $DOCKER_HOST"
+          echo "Artifact path: $ART"
+          echo "Image name: $IMAGE_NAME"
           
-          # Use mlflow build-docker with explicit DOCKER_HOST
-          mlflow models build-docker -m "$MODEL_URI" -n "$IMAGE_NAME"
+          # Build Docker image using artifact path directly
+          mlflow models build-docker -m "$ART" -n "$IMAGE_NAME"
+          
+          echo "Tagging image as latest..."
+          docker tag "$IMAGE_NAME" "$IMAGE_NAME:latest"
           
           echo "Pushing image to Docker Hub..."
-          docker push "$IMAGE_NAME"
+          docker push "$IMAGE_NAME:latest"
           
-          echo "Docker image pushed successfully: $IMAGE_NAME"
+          echo "Docker image pushed successfully: $IMAGE_NAME:latest"
       
       - name: Save Docker Hub link
         run: |
