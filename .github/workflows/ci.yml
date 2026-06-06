@@ -126,8 +126,6 @@ jobs:
           echo "Docker setup complete"
       
       - name: Build Docker Image with MLflow
-        env:
-          DOCKER_HOST: unix:///var/run/docker.sock
         run: |
           echo "Building Docker image from artifact path..."
           ART="${{ env.RUN_DIR }}/artifacts/model"
@@ -136,16 +134,41 @@ jobs:
           echo "Artifact path: $ART"
           echo "Image name: $IMAGE_NAME"
           
-          # Build Docker image using artifact path directly
-          mlflow models build-docker -m "$ART" -n "$IMAGE_NAME"
+          # Create build directory
+          BUILD_DIR="/tmp/model_build"
+          mkdir -p "$BUILD_DIR"
           
-          echo "Tagging image as latest..."
-          docker tag "$IMAGE_NAME" "$IMAGE_NAME:latest"
+          # Copy model artifacts
+          cp -r "$ART"/* "$BUILD_DIR/"
           
-          echo "Pushing image to Docker Hub..."
+          # Create custom Dockerfile with Python 3.12
+          cat > "$BUILD_DIR/Dockerfile" <<'EOF'
+          FROM python:3.12-slim
+          
+          WORKDIR /opt/ml/model
+          
+          # Copy model files first
+          COPY . /opt/ml/model
+          
+          # Install MLflow and dependencies
+          RUN pip install --no-cache-dir mlflow==2.19.0 && \
+              if [ -f requirements.txt ]; then \
+                pip install --no-cache-dir -r requirements.txt; \
+              fi
+          
+          # Expose port
+          EXPOSE 8080
+          
+          # Serve model
+          CMD ["mlflow", "models", "serve", "-m", "/opt/ml/model", "-h", "0.0.0.0", "-p", "8080", "--no-conda"]
+          EOF
+          
+          # Build and push Docker image
+          cd "$BUILD_DIR"
+          docker build -t "$IMAGE_NAME:latest" .
           docker push "$IMAGE_NAME:latest"
           
-          echo "Docker image pushed successfully: $IMAGE_NAME:latest"
+          echo "✅ Docker image pushed: $IMAGE_NAME:latest"
       
       - name: Save Docker Hub link
         run: |
