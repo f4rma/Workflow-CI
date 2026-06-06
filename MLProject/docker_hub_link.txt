@@ -1,3 +1,5 @@
-Docker Hub Image: https://hub.docker.com/r/f4rma/heart-disease-model
+Docker Hub Repository: https://hub.docker.com/r/f4rma/heart-disease-model
+Docker Hub Tags: https://hub.docker.com/r/f4rma/heart-disease-model/tags
 Image Tag: f4rma/heart-disease-model:latest
+Pull Command: docker pull f4rma/heart-disease-model:latest
 Build Date: Sat Jun  6 19:42:59 UTC 2026

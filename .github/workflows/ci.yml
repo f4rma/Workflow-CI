@@ -134,15 +134,19 @@ jobs:
           echo "Artifact path: $ART"
           echo "Image name: $IMAGE_NAME"
           
-          # Create build directory
-          BUILD_DIR="/tmp/model_build"
-          mkdir -p "$BUILD_DIR"
-          
-          # Copy model artifacts
-          cp -r "$ART"/* "$BUILD_DIR/"
-          
-          # Create custom Dockerfile with Python 3.12
-          cat > "$BUILD_DIR/Dockerfile" <<'EOF'
+          # Method 1: Try mlflow build-docker first (official way)
+          # But it might fail with Python 3.9 issue, so we handle it gracefully
+          echo "Attempting official mlflow build-docker..."
+          if ! mlflow models build-docker -m "$ART" -n "$IMAGE_NAME" 2>/dev/null; then
+            echo "⚠️ Official mlflow build-docker failed (Python 3.9 issue)"
+            echo "✅ Using fallback: Custom Dockerfile with Python 3.12"
+            
+            # Fallback: Custom Dockerfile with Python 3.12
+            BUILD_DIR="/tmp/model_build"
+            mkdir -p "$BUILD_DIR"
+            cp -r "$ART"/* "$BUILD_DIR/"
+            
+            cat > "$BUILD_DIR/Dockerfile" <<'EOF'
           FROM python:3.12-slim
           
           WORKDIR /opt/ml/model
@@ -159,24 +163,35 @@ jobs:
           # Expose port
           EXPOSE 8080
           
-          # Serve model
+          # Serve model (MLflow official serving method)
           CMD ["mlflow", "models", "serve", "-m", "/opt/ml/model", "-h", "0.0.0.0", "-p", "8080", "--no-conda"]
           EOF
+            
+            cd "$BUILD_DIR"
+            docker build -t "$IMAGE_NAME:latest" .
+          else
+            echo "✅ MLflow build-docker succeeded"
+            docker tag "$IMAGE_NAME" "$IMAGE_NAME:latest"
+          fi
           
-          # Build and push Docker image
-          cd "$BUILD_DIR"
-          docker build -t "$IMAGE_NAME:latest" .
+          # Push to Docker Hub
           docker push "$IMAGE_NAME:latest"
-          
           echo "✅ Docker image pushed: $IMAGE_NAME:latest"
       
       - name: Save Docker Hub link
         run: |
           cd MLProject
-          IMAGE_NAME="${{ secrets.DOCKERHUB_USERNAME }}/heart-disease-model:latest"
-          echo "Docker Hub Image: https://hub.docker.com/r/${{ secrets.DOCKERHUB_USERNAME }}/heart-disease-model" > docker_hub_link.txt
-          echo "Image Tag: $IMAGE_NAME" >> docker_hub_link.txt
-          echo "Build Date: $(date)" >> docker_hub_link.txt
+          USERNAME="${{ secrets.DOCKERHUB_USERNAME }}"
+          IMAGE_NAME="$USERNAME/heart-disease-model"
+          
+          cat > docker_hub_link.txt <<EOF
+          Docker Hub Repository: https://hub.docker.com/r/$IMAGE_NAME
+          Docker Hub Tags: https://hub.docker.com/r/$IMAGE_NAME/tags
+          Image Tag: $IMAGE_NAME:latest
+          Pull Command: docker pull $IMAGE_NAME:latest
+          Build Date: $(date)
+          EOF
+          
           cat docker_hub_link.txt
       
       - name: Commit Docker Hub link
