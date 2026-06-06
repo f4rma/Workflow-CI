@@ -30,11 +30,12 @@ jobs:
       
       - name: Run MLflow Project
         run: |
-          mlflow run MLProject \
-            -P data_path=heart-disease_preprocessing.csv \
-            -P n_estimators=100 \
-            -P random_state=42 \
-            -P test_size=0.2
+          cd MLProject
+          python modelling.py \
+            heart-disease_preprocessing.csv \
+            100 \
+            42 \
+            0.2
       
       - name: Get latest run ID
         id: get_run_id
