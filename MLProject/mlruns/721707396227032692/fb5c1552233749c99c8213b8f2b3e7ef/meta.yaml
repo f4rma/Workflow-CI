@@ -1,0 +1,15 @@
+artifact_uri: file:///home/runner/work/Workflow-CI/Workflow-CI/MLProject/mlruns/721707396227032692/fb5c1552233749c99c8213b8f2b3e7ef/artifacts
+end_time: 1780776748368
+entry_point_name: ''
+experiment_id: '721707396227032692'
+lifecycle_stage: active
+run_id: fb5c1552233749c99c8213b8f2b3e7ef
+run_name: welcoming-asp-133
+run_uuid: fb5c1552233749c99c8213b8f2b3e7ef
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1780776734789
+status: 3
+tags: []
+user_id: runner
