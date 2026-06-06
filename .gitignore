@@ -35,6 +35,7 @@ env/
 
 # MLflow (keep mlruns for CI/CD commits)
 # mlruns/  # Commented out - kita mau commit ini
+mlruns/.trash/  # Ignore trash folder only
 mlflow_output/
 
 # Jupyter Notebook
