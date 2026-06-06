@@ -1,0 +1,15 @@
+artifact_uri: file:///home/runner/work/Workflow-CI/Workflow-CI/MLProject/mlruns/721707396227032692/e65c1eafb7964c90bde031358bdf42d4/artifacts
+end_time: 1780771734780
+entry_point_name: ''
+experiment_id: '721707396227032692'
+lifecycle_stage: active
+run_id: e65c1eafb7964c90bde031358bdf42d4
+run_name: bittersweet-crow-772
+run_uuid: e65c1eafb7964c90bde031358bdf42d4
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1780771721411
+status: 3
+tags: []
+user_id: runner
